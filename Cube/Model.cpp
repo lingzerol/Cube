@@ -1299,7 +1299,7 @@ void on_mouse(int event, int x, int y, int flags, void* userdata) {
 		std::chrono::system_clock::time_point me = std::chrono::system_clock::now();
 		int duration = (std::chrono::duration_cast<std::chrono::duration<int, std::ratio<1, 1000>>>(me - ms)).count();
 		if (duration < 20) {
-			return;
+			return;// avoid refreshing frequently
 		}
 		int x0 = start.x;
 		int y0 = start.y;
