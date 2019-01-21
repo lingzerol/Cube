@@ -8,8 +8,7 @@ typedef int Int;
 typedef double Double;// the type of the element of equation
 
 
-
-const int time_span = 10;
+const int time_span = 1;
 
 // Color value and equation
 typedef unsigned int COLOR;
@@ -572,30 +571,39 @@ const int ZMTURN[13] = {1,4,7,10,13,16,37,40,43,46,49,52,31};
 const int MTURN_NUM = 12;
 
 #define TURN_L 0x000001
-#define TURN_R 0x000002
-#define TURN_F 0x000004
-#define TURN_B 0x000008
-#define TURN_U 0x000010
-#define TURN_D 0x000020
-#define TURN_XM 0x000040
-#define TURN_YM 0x000080
-#define TURN_ZM 0x000100
+#define TURN_LN 0x000002
+#define TURN_R 0x000004
+#define TURN_RN 0x000008
+#define TURN_F 0x000010
+#define TURN_FN 0x000020
+#define TURN_B 0x000040
+#define TURN_BN 0x000080
+#define TURN_U 0x000100
+#define TURN_UN 0x000200
+#define TURN_D 0x000400
+#define TURN_DN 0x000800
+#define TURN_XM 0x001000
+#define TURN_XMN 0x002000
+#define TURN_YM 0x004000
+#define TURN_YMN 0x008000
+#define TURN_ZM 0x010000
+#define TURN_ZMN 0x020000
 #define QUIT 0x000000
-#define SHOW 0x000200
-const int instru_num = 9;
+#define SHOW 0x040000
+const int instru_num = 18;
 
 class Cube_Plane {
 public:
 	Cube_Plane();
 	Cube_Plane(const Cube_Plane& c);
-	Cube_Plane(const std::vector<std::vector<int>>_cube_plane);
-	std::vector<int>& operator[](int i) {
+	Cube_Plane(const std::vector<std::vector<COLOR>>_cube_plane);
+	std::vector<COLOR>& operator[](int i) {
 		return cube_plane[i];
 	}
 	std::vector<int>::size_type size() {
 		return cube_plane.size();
 	}
-	const std::vector<int>& operator[](int i) const{
+	const std::vector<COLOR>& operator[](int i) const{
 		return cube_plane[i];
 	}
 	const std::vector<int>::size_type size() const{
@@ -610,10 +618,19 @@ public:
 	void XM();
 	void YM();
 	void ZM();
+	void LN();
+	void RN();
+	void FN();
+	void BN();
+	void UN();
+	void DN();
+	void XMN();
+	void YMN();
+	void ZMN();
 	void transform(unsigned instruction);
 private:
-	void turn(int p[4], int b[4][3], int pf = -1);
-	std::vector<std::vector<int>> cube_plane;// 0 is red, 1 is orange, 2 is green, 3 is blue, 4 is yellow, 5 is white, such as 01 means red plane and the 1st subplane
+	void turn(int p[4], int b[4][3], int pf = -1, bool flag = true);
+	std::vector<std::vector<COLOR>> cube_plane;// 0 is red, 1 is orange, 2 is green, 3 is blue, 4 is yellow, 5 is white, such as 01 means red plane and the 1st subplane
 };
 
 
@@ -635,7 +652,15 @@ public:
 	void XM(Double angle);
 	void YM(Double angle);
 	void ZM(Double angle);
-	
+	void LN(Double angle);
+	void RN(Double angle);
+	void FN(Double angle);
+	void BN(Double angle);
+	void UN(Double angle);
+	void DN(Double angle);
+	void XMN(Double angle);
+	void YMN(Double angle);
+	void ZMN(Double angle);
 private:
 	void turn(void(Model::*t)(Double), double angle);
 	void turn(const int *TURN,int TURN_NUM,double angle);
@@ -651,6 +676,7 @@ private:
 
 class Cube {
 public:
+	friend class Magic_Cube;
 	Cube():image(500, 500, CV_8UC3, CV_RGB(0, 0, 0)),have_message(false),zv(0){
 		//cv::namedWindow("zero");
 		memset(rv, 0, sizeof(rv));
@@ -668,29 +694,20 @@ public:
 	void XM();
 	void YM();
 	void ZM();
+	void LN();
+	void RN();
+	void FN();
+	void BN();
+	void UN();
+	void DN();
+	void XMN();
+	void YMN();
+	void ZMN();
 	void Message_loop();
-	void add_message(unsigned instruction, int zv=0, double *rv=NULL, int*tv=NULL) {
-		std::unique_lock<std::mutex> lck(mtx);
-		message_queue.push(instruction);
-		if (0 != zv)
-			this->zv *= zv;
-		if (rv)
-		{
-			this->rv[0] = fmod(this->rv[0]+rv[0],2*PI);
-			this->rv[1] = fmod(this->rv[1] + rv[1], 2 * PI);
-			this->rv[2] = fmod(this->rv[2] + rv[2], 2 * PI);
-		}
-		if (tv)
-		{
-			this->tv[0] = tv[0];
-			this->tv[1] = tv[1];
-			this->tv[2] = tv[2];
-		}
-		have_message = true;
-	}
+	void add_message(unsigned instruction, int zv = 0, double *rv = NULL, int*tv = NULL);
 	void turn(unsigned instruction, int zv = 0, double *rv = NULL, int*tv = NULL);
-private:
-	
+	std::vector<COLOR>& operator [](int i);
+private:// variables
 	Cube_Plane cube_plane;
 	cv::Mat image;
 	std::queue<unsigned> message_queue;
@@ -698,7 +715,10 @@ private:
 	double rv[3];
 	int tv[3];
 	std::atomic<bool> have_message;
-	std::mutex mtx;
+	std::mutex mtx,cube_mtx,finish_mtx;
+	std::condition_variable finish_modify;
+private:// functions
+
 };
 // basis function
 int GCD(int a, int b);

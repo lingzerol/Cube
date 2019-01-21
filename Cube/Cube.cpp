@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Model.h"
+#include "Cube.h"
 #include <algorithm>
 #include <cmath>
 using std::cin;
@@ -11,8 +11,6 @@ using std::vector;
 
 cv::Point start(0, 0);// record the mouse start point
 std::chrono::system_clock::time_point ms;// avoid frequently calling
-
-Cube cube;// only one cube
 
 // function about COLOR
 uchar R(COLOR color) { return color >> 16; }
@@ -774,9 +772,9 @@ void Geometric_transformation::transform(Point& point, const std::vector<std::ve
 // functions in Cube_Plane
 Cube_Plane::Cube_Plane() {
 	for (int i = 0; i < 6; ++i) {
-		std::vector<int> temp;
+		std::vector<COLOR> temp;
 		for (int j = 0; j < 9; ++j) {
-			temp.push_back(i * 10 + j);
+			temp.push_back(CUBE_COLOR[i]);
 		}
 		cube_plane.push_back(temp);
 	}
@@ -786,7 +784,7 @@ Cube_Plane::Cube_Plane(const Cube_Plane& c):cube_plane(c.cube_plane) {
 
 }
 
-Cube_Plane::Cube_Plane(const std::vector<std::vector<int>>_cube_plane):cube_plane(_cube_plane) {
+Cube_Plane::Cube_Plane(const std::vector<std::vector<COLOR>>_cube_plane):cube_plane(_cube_plane) {
 
 }
 
@@ -795,7 +793,7 @@ Cube_Plane::Cube_Plane(const std::vector<std::vector<int>>_cube_plane):cube_plan
 void Cube_Plane::R() {
 
 	int p[4] = { 0,4,1,5 };
-	int b[4][3] = { { 2,5,8 },{2,5,8 } , { 2,5,8  }, { 2,5,8  } };
+	int b[4][3] = { { 2,5,8 },{2,5,8 } , { 6,3,0  }, { 2,5,8  } };
 	turn(p, b, 2);
 }
 void Cube_Plane::L() {
@@ -829,15 +827,15 @@ void Cube_Plane::D() {
 	turn(p, b, 5);
 }
 void Cube_Plane::XM() {
-
-	int p[4] = { 1,3,0,2 };
+	int p[4] = { 1,2,0,3 };
 	int b[4][3] = { {3,4,5} ,{3,4,5},{3,4,5},{3,4,5} };
 	turn(p, b);
+
 }
 void Cube_Plane::YM() {
 
 	int p[4] = { 2,5,3,4 };
-	int b[4][3] = { {7,4,1} ,{3,4,5},{7,4,1},{5,4,3} };
+	int b[4][3] = { {1,4,7} ,{3,4,5},{7,4,1},{5,4,3} };
 	turn(p, b);
 }
 void Cube_Plane::ZM() {
@@ -846,9 +844,64 @@ void Cube_Plane::ZM() {
 	int b[4][3] = { { 1,4,7 },{ 7,4,1 } , { 7,4,1 }, { 7,4,1 } };
 	turn(p, b);
 }
-void Cube_Plane::turn(int p[4], int b[4][3], int pf) {
+
+void Cube_Plane::RN() {
+
+	int p[4] = { 0,5,1,4 };
+	int b[4][3] = { { 2,5,8 },{2,5,8 } , { 6,3,0  }, { 2,5,8  } };
+	turn(p, b, 2, false);
+}
+void Cube_Plane::LN() {
+
+	int p[4] = { 0,4,1,5 };
+	int b[4][3] = { { 0,3,6 },{ 0,3,6 } , { 8,5,2 }, { 0,3,6 } };
+	turn(p, b, 3, false);
+}
+void Cube_Plane::FN() {
+
+	int p[4] = { 2,4,3,5 };
+	int b[4][3] = { {0, 3, 6} , { 2,1,0 },{8, 5, 2} , { 6,7,8 } };
+	turn(p, b, 0, false);
+}
+void Cube_Plane::BN() {
+
+	int p[4] = { 3,4,2,5 };
+	int b[4][3] = { {0,3,6},{6,7,8},{8,5,2}, {2,1,0}};
+	turn(p, b, 1, false);
+}
+void Cube_Plane::UN() {
+
+	int p[4] = { 0,2,1,3 };
+	int b[4][3] = { {6,7,8} ,{6,7,8},{6,7,8},{6,7,8} };
+	turn(p, b, 4,false);
+}
+void Cube_Plane::DN() {
+
+	int p[4] = { 1,2,0,3 };
+	int b[4][3] = { {0,1,2} ,{0,1,2},{0,1,2},{0,1,2} };
+	turn(p, b, 5,false);
+}
+void Cube_Plane::XMN() {
+	int p[4] = { 1,3,0,2 };
+	int b[4][3] = { {3,4,5} ,{3,4,5},{3,4,5},{3,4,5} };
+	turn(p, b);
+}
+void Cube_Plane::YMN() {
+
+	int p[4] = { 2,4,3,5 };
+	int b[4][3] = { {1,4,7} ,{3,4,5},{7,4,1},{5,4,3} };
+	turn(p, b);
+}
+void Cube_Plane::ZMN() {
+
+	int p[4] = { 1,4,0,5 };
+	int b[4][3] = { { 1,4,7 },{ 7,4,1 } , { 7,4,1 }, { 7,4,1 } };
+	turn(p, b);
+}
+
+void Cube_Plane::turn(int p[4], int b[4][3], int pf,bool flag) {
 	const int pnum = 4, bnum = 3;
-	int temp[3] = { cube_plane[p[3]][b[3][0]],cube_plane[p[3]][b[3][1]],cube_plane[p[3]][b[3][2]] };
+	COLOR temp[3] = { cube_plane[p[3]][b[3][0]],cube_plane[p[3]][b[3][1]],cube_plane[p[3]][b[3][2]] };
 	for (int i = pnum - 1; i > 0; --i) {
 		cube_plane[p[(i) % pnum]][b[i][0]] = cube_plane[p[(i - 1) % pnum]][b[i - 1][0]];
 		cube_plane[p[(i) % pnum]][b[i][1]] = cube_plane[p[(i - 1) % pnum]][b[i - 1][1]];
@@ -857,8 +910,8 @@ void Cube_Plane::turn(int p[4], int b[4][3], int pf) {
 	cube_plane[p[0]][b[0][0]] = temp[0];
 	cube_plane[p[0]][b[0][1]] = temp[1];
 	cube_plane[p[0]][b[0][2]] = temp[2];
-	if (pf != -1) {
-		std::vector<int> temp;
+	if (pf!=-1&&flag) {
+		std::vector<COLOR> temp;
 		temp.push_back(cube_plane[pf][2]);
 		temp.push_back(cube_plane[pf][5]);
 		temp.push_back(cube_plane[pf][8]);
@@ -868,6 +921,19 @@ void Cube_Plane::turn(int p[4], int b[4][3], int pf) {
 		temp.push_back(cube_plane[pf][0]);
 		temp.push_back(cube_plane[pf][3]);
 		temp.push_back(cube_plane[pf][6]);
+		cube_plane[pf] = temp;
+	}
+	else if (pf!=-1&&!flag) {
+		std::vector<COLOR> temp;
+		temp.push_back(cube_plane[pf][6]);
+		temp.push_back(cube_plane[pf][3]);
+		temp.push_back(cube_plane[pf][0]);
+		temp.push_back(cube_plane[pf][7]);
+		temp.push_back(cube_plane[pf][4]);
+		temp.push_back(cube_plane[pf][1]);
+		temp.push_back(cube_plane[pf][8]);
+		temp.push_back(cube_plane[pf][5]);
+		temp.push_back(cube_plane[pf][2]);
 		cube_plane[pf] = temp;
 	}
 }
@@ -902,6 +968,33 @@ void Cube_Plane::transform(unsigned instruction) {
 			break;
 		case TURN_ZM:
 			ZM();
+			break;
+		case TURN_LN:
+			LN();
+			break;
+		case TURN_RN:
+			RN();
+			break;
+		case TURN_FN:
+			FN();
+			break;
+		case TURN_BN:
+			BN();
+			break;
+		case TURN_UN:
+			UN();
+			break;
+		case TURN_DN:
+			DN();
+			break;
+		case TURN_XMN:
+			XMN();
+			break;
+		case TURN_YMN:
+			YMN();
+			break;
+		case TURN_ZMN:
+			ZMN();
 			break;
 		}
 	}
@@ -962,10 +1055,7 @@ Model Model::operator  = (const Model& dm) {
 void Model::set_plane(const Cube_Plane&cube_plane) {
 	for (int i = 0; i < cube_plane.size(); ++i) {
 		for (int j = 0; j < cube_plane[i].size(); ++j) {
-			int a, b;
-			a = cube_plane[i][j] / 10;
-			b = cube_plane[i][j] % 10;
-			plane.push_back(Plane(CUBE_PLANE[i][j],4,CUBE_COLOR[a]));
+			plane.push_back(Plane(CUBE_PLANE[i][j],4,cube_plane[i][j]));
 		}
 	}
 }
@@ -1020,6 +1110,33 @@ std::vector<std::vector<COLOR>> Model::transform(unsigned instruction, double an
 			case TURN_ZM:
 				turn((&Model::ZM), angle);
 				break;
+			case TURN_LN:
+				turn((&Model::LN), angle);
+				break;
+			case TURN_RN:
+				turn((&Model::RN), angle);
+				break;
+			case TURN_FN:
+				turn((&Model::FN), angle);
+				break;
+			case TURN_BN:
+				turn((&Model::BN), angle);
+				break;
+			case TURN_UN:
+				turn((&Model::UN), angle);
+				break;
+			case TURN_DN:
+				turn((&Model::DN), angle);
+				break;
+			case TURN_XMN:
+				turn((&Model::XMN), angle);
+				break;
+			case TURN_YMN:
+				turn((&Model::YMN), angle);
+				break;
+			case TURN_ZMN:
+				turn((&Model::ZMN), angle);
+				break;
 			}
 		}	
 	blank.blank(res, plane, 500, 500);
@@ -1043,10 +1160,10 @@ void Model::B(Double angle) {
 	turn(BTURN, LRFBUD_TURN_NUM, -angle);
 }
 void Model::U(Double angle) {
-	turn(UTURN, LRFBUD_TURN_NUM, angle);
+	turn(UTURN, LRFBUD_TURN_NUM, -angle);
 }
 void Model::D(Double angle) {
-	turn(DTURN, LRFBUD_TURN_NUM, angle);
+	turn(DTURN, LRFBUD_TURN_NUM, -angle);
 }
 void Model::XM(Double angle) {
 	turn(XMTURN, MTURN_NUM, -angle);
@@ -1056,6 +1173,33 @@ void Model::YM(Double angle) {
 }
 void Model::ZM(Double angle) {
 	turn(ZMTURN, MTURN_NUM, angle);
+}
+void Model::RN(Double angle) {
+	turn(RTURN, LRFBUD_TURN_NUM, angle);
+}
+void Model::LN(Double angle) {
+	turn(LTURN, LRFBUD_TURN_NUM, angle);
+}
+void Model::FN(Double angle) {
+	turn(FTURN, LRFBUD_TURN_NUM, angle);
+}
+void Model::BN(Double angle) {
+	turn(BTURN, LRFBUD_TURN_NUM, angle);
+}
+void Model::UN(Double angle) {
+	turn(UTURN, LRFBUD_TURN_NUM, angle);
+}
+void Model::DN(Double angle) {
+	turn(DTURN, LRFBUD_TURN_NUM, angle);
+}
+void Model::XMN(Double angle) {
+	turn(XMTURN, MTURN_NUM, angle);
+}
+void Model::YMN(Double angle) {
+	turn(YMTURN, MTURN_NUM, angle);
+}
+void Model::ZMN(Double angle) {
+	turn(ZMTURN, MTURN_NUM, -angle);
 }
 void Model::turn(void(Model::*t)(Double),double angle) {
 	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
@@ -1188,6 +1332,33 @@ void Cube::YM(){
 void Cube::ZM(){
 	turn(TURN_ZM);
 }
+void Cube::LN() {
+	turn(TURN_LN);
+}
+void Cube::RN() {
+	turn(TURN_RN);
+}
+void Cube::FN() {
+	turn(TURN_FN);
+}
+void Cube::BN() {
+	turn(TURN_BN);
+}
+void Cube::UN() {
+	turn(TURN_UN);
+}
+void Cube::DN() {
+	turn(TURN_DN);
+}
+void Cube::XMN() {
+	turn(TURN_XMN);
+}
+void Cube::YMN() {
+	turn(TURN_YMN);
+}
+void Cube::ZMN() {
+	turn(TURN_ZMN);
+}
 void Cube::Message_loop() {
 	std::queue<unsigned> instruction;
 	instruction.push(SHOW);
@@ -1217,11 +1388,33 @@ void Cube::Message_loop() {
 		{
 			if (instruction.front() == 0)
 				return;
+			std::unique_lock<std::mutex> cube_lck(cube_mtx);
 			turn(instruction.front(),zv,rv,tv);
 			instruction.pop();
 		}
+		finish_modify.notify_all();
 	}
 }
+void Cube::add_message(unsigned instruction, int zv, double *rv, int*tv) {
+	std::unique_lock<std::mutex> lck(mtx);
+	message_queue.push(instruction);
+	if (0 != zv)
+		this->zv *= zv;
+	if (rv)
+	{
+		this->rv[0] = fmod(this->rv[0] + rv[0], 2 * PI);
+		this->rv[1] = fmod(this->rv[1] + rv[1], 2 * PI);
+		this->rv[2] = fmod(this->rv[2] + rv[2], 2 * PI);
+	}
+	if (tv)
+	{
+		this->tv[0] = tv[0];
+		this->tv[1] = tv[1];
+		this->tv[2] = tv[2];
+	}
+	have_message = true;
+}
+
 void Cube::turn(unsigned instruction, int zv, double *rv, int*tv) {
 	Model model(cube_plane);
 	cube_plane.transform(instruction);
@@ -1247,7 +1440,7 @@ void Cube::turn(unsigned instruction, int zv, double *rv, int*tv) {
 			}
 		}
 		cv::namedWindow("zero");
-		cv::setMouseCallback("zero", on_mouse, &model);
+		cv::setMouseCallback("zero", on_mouse, this);
 		cv::imshow("zero", image);
 		cv::waitKey(time_span);
 		return;
@@ -1266,12 +1459,16 @@ void Cube::turn(unsigned instruction, int zv, double *rv, int*tv) {
 			}
 		}
 		cv::namedWindow("zero");
-		cv::setMouseCallback("zero", on_mouse, &temp);
+		cv::setMouseCallback("zero", on_mouse, this);
 		cv::imshow("zero", image);
 		cv::waitKey(time_span);
 	}
 }
 
+std::vector<COLOR>& Cube::operator [](int i) {
+	std::unique_lock<std::mutex> lck(cube_mtx);
+	return cube_plane[i];
+}
 
 // basis function
 int GCD(int a, int b) {
@@ -1289,7 +1486,7 @@ int LCM(int a, int b) {
 	return a * b*gcd;
 }
 
-void on_mouse(int event, int x, int y, int flags, void* userdata) {
+void CV_CDECL  on_mouse(int event, int x, int y, int flags, void* userdata) {
 	if (CV_EVENT_LBUTTONDOWN == event) {
 		start = cv::Point(x, y);
 		ms = std::chrono::system_clock::now();
@@ -1308,16 +1505,17 @@ void on_mouse(int event, int x, int y, int flags, void* userdata) {
 		double disx = dx * dx;
 		double disy = dy * dy;
 		double roundx = disx / 1000;
-		double roundy = disx / 1000;
+		double roundy = disy / 1000;
 		if (dx < 0)
 			roundx = -roundx;
 		if (dy < 0)
 			roundy = -roundy;
 		double rv[3];
-		rv[0] = roundx;
-		rv[1] = roundy;
+		rv[0] = -roundy;
+		rv[1] = roundx;
 		rv[2] = 0;
-		cube.add_message(SHOW, 0, rv);
+		//std::cout << roundx << std::endl;
+		((Cube*)userdata)->add_message(SHOW, 0, rv);
 		start = cv::Point(x, y);
 		ms = std::chrono::system_clock::now();
 	}
