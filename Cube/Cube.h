@@ -590,6 +590,8 @@ const int MTURN_NUM = 12;
 #define TURN_ZMN 0x020000
 #define QUIT 0x000000
 #define SHOW 0x040000
+#define DISORDER 0x080000
+#define RESTORE 0x100000
 const int instru_num = 18;
 
 class Cube_Plane {

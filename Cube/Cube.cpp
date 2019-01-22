@@ -889,7 +889,7 @@ void Cube_Plane::XMN() {
 void Cube_Plane::YMN() {
 
 	int p[4] = { 2,4,3,5 };
-	int b[4][3] = { {1,4,7} ,{3,4,5},{7,4,1},{5,4,3} };
+	int b[4][3] = { {1,4,7} ,{5,4,3},{7,4,1},{3,4,5} };
 	turn(p, b);
 }
 void Cube_Plane::ZMN() {
@@ -998,6 +998,71 @@ void Cube_Plane::transform(unsigned instruction) {
 			break;
 		}
 	}
+	/*std::ofstream out("./cube.txt",std::ios::app|std::ios::out);
+	for (int i = 0; i < 6; ++i) {
+		for (int j = 0; j < 6; ++j) {
+			switch (cube_plane[i][j]) {
+			case red:
+				out << 0 << " ";
+				break;
+			case orange:
+				out << 1 << " ";
+				break;
+			case green:
+				out << 2 << " ";
+				break;
+			case blue:
+				out << 3 << " ";
+				break;
+			case yellow:
+				out << 4 << " ";
+				break;
+			case white:
+				out << 5 << " ";
+				break;
+			}
+		}
+	}
+	switch (instruction)
+	{
+	case turn_l :
+		out << 1 << std::endl;
+		break;
+	case turn_ln :
+		out << 0 << std::endl;
+		break;
+	case turn_r :
+		out << 3 << std::endl;
+		break;	
+	case turn_rn :
+		out << 2 << std::endl;
+		break;
+	case turn_f :
+		out << 5 << std::endl;
+		break;
+	case turn_fn :
+		out << 4 << std::endl;
+		break;
+	case turn_b :
+		out << 7 << std::endl;
+		break;
+	case turn_bn :
+		out << 6 << std::endl;
+		break;
+	case turn_u :
+		out << 9 << std::endl;
+		break;
+	case turn_un :
+		out << 8 << std::endl;
+		break;
+	case turn_d :
+		out << 11 << std::endl;
+		break;
+	case turn_dn :
+		out << 10 << std::endl;
+		break;
+	}
+	out.close();*/
 }
 
 // functions in Model
@@ -1139,6 +1204,7 @@ std::vector<std::vector<COLOR>> Model::transform(unsigned instruction, double an
 				break;
 			}
 		}	
+
 	blank.blank(res, plane, 500, 500);
 	//std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
 	//std::cout << (std::chrono::duration_cast<std::chrono::duration<double>>(end - start)).count() << std::endl;
@@ -1202,13 +1268,13 @@ void Model::ZMN(Double angle) {
 	turn(ZMTURN, MTURN_NUM, -angle);
 }
 void Model::turn(void(Model::*t)(Double),double angle) {
-	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+	//std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 	(this->*t)(angle);
-	std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
-	int seconds = (std::chrono::duration_cast<std::chrono::duration<int, std::ratio<1, 1000>>>(end - start)).count();
-	seconds -= time_span;
-	seconds = std::max(seconds, 0);
-	std::this_thread::sleep_for(std::chrono::milliseconds(seconds));
+	//std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
+	//int seconds = (std::chrono::duration_cast<std::chrono::duration<int, std::ratio<1, 1000>>>(end - start)).count();
+	//seconds -= time_span;
+	//seconds = std::max(seconds, 0);
+	//std::this_thread::sleep_for(std::chrono::milliseconds(seconds));
 }
 void Model::turn(const int* TURN,int TURN_NUM,double angle) {
 	const int n = 4;
@@ -1374,7 +1440,9 @@ void Cube::Message_loop() {
 			cv::imshow("zero", image);
 			cv::waitKey(time_span);
 		}
+		std::unique_lock<std::mutex> finisn_lck(finish_mtx);
 		std::unique_lock<std::mutex> lck(mtx);
+
 		while (!message_queue.empty())
 		{
 			instruction.push(message_queue.front());
@@ -1392,6 +1460,7 @@ void Cube::Message_loop() {
 			turn(instruction.front(),zv,rv,tv);
 			instruction.pop();
 		}
+		start = std::chrono::system_clock::now();
 		finish_modify.notify_all();
 	}
 }

@@ -146,6 +146,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>D:\Programe Files\Opencv\opencv-3.4.2\build\include;D:\Programe Files\Opencv\opencv-3.4.2\build\include\opencv2;D:\Programe Files\Opencv\opencv-3.4.2\build\include\opencv;D:\Programe Files\Matlab\R2018b\extern\include;D:\Programe Files\Matlab\extern\include\win64</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
