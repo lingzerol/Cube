@@ -18,5 +18,4 @@ Magic_Cube.h、Magic_Cube.cpp: 包含魔方还原的函数及类
 程序效果
 --------
 
-
-[![Image]](https://raw.githubusercontent.com/lingzerol/Cube/master/Program%20performance/cube_restoring.PNG)
+![image](https://raw.githubusercontent.com/lingzerol/Cube/master/Program%20performance/cube_restoring.PNG)
