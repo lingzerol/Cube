@@ -12,10 +12,11 @@ Auto-restoring magic cube
 项目的基本结构
 -------------
 
-Cube.h、Cube.cpp: 用于实现3D模型转2D图像，并增加光照模型\<br /\> 
+Cube.h、Cube.cpp: 用于实现3D模型转2D图像，并增加光照模型  
 Magic_Cube.h、Magic_Cube.cpp: 包含魔方还原的函数及类
 
 程序效果
 --------
 
-[![Watch the video](https://raw.githubusercontent.com/lingzerol/Cube/master/Program%20performance/program_show.mp4)]
+
+[![Image]](https://raw.githubusercontent.com/lingzerol/Cube/master/Program%20performance/cube_restoring.PNG)
