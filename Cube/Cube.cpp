@@ -262,7 +262,7 @@ Double Illumination::get_S0(Double Z0) {
 }
 
 // functions in Blanking
-void Blanking::blank(std::vector<std::vector<COLOR>>& res,const std::vector<Plane>& plane,const Int width,const Int height) {
+void Blanking::blank(std::vector<std::vector<COLOR>>& res,const std::vector<Plane>& plane,const Int height,const Int width) {
 	typedef std::vector<Plane>::size_type SIZE;
 	// Initialize the polygon
 	std::vector<Polygon> polygon;
@@ -1205,7 +1205,7 @@ std::vector<std::vector<COLOR>> Model::transform(unsigned instruction, double an
 			}
 		}	
 
-	blank.blank(res, plane, 500, 500);
+	blank.blank(res, plane, HEIGHT, WIDTH);
 	//std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
 	//std::cout << (std::chrono::duration_cast<std::chrono::duration<double>>(end - start)).count() << std::endl;
 	std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
@@ -1500,12 +1500,12 @@ void Cube::turn(unsigned instruction, int zv, double *rv, int*tv) {
 	}
 	if (SHOW == instruction) {
 		std::vector<std::vector<COLOR>> res = model.transform(instruction,0);
-		for (int j = 0; j < 500; ++j) {
-			for (int k = 0; k < 500; ++k) {
+		for (int j = 0; j < HEIGHT; ++j) {
+			for (int k = 0; k < WIDTH; ++k) {
 				uchar* p = image.ptr(j, k);
-				p[0] = ::B(res[499 - j][k]);
-				p[1] = ::G(res[499 - j][k]);
-				p[2] = ::R(res[499 - j][k]);
+				p[0] = ::B(res[HEIGHT-1-j][k]);
+				p[1] = ::G(res[HEIGHT-1-j][k]);
+				p[2] = ::R(res[HEIGHT-1-j][k]);
 			}
 		}
 		cv::namedWindow("zero");
@@ -1517,14 +1517,14 @@ void Cube::turn(unsigned instruction, int zv, double *rv, int*tv) {
 	for (Double i = 0.1; i <= 0.5; i += 0.1) {
 		Model temp = model;
 	
-		//cv::Mat image(500, 500, CV_8UC3, CV_RGB(0, 0, 0));
+		//cv::Mat image(HEIGHT, WIDTH, CV_8UC3, CV_RGB(0, 0, 0));
 		std::vector<std::vector<COLOR>> res=temp.transform(instruction,i*PI);
-		for (int j = 0; j < 500; ++j) {
-			for (int k = 0; k < 500; ++k) {
+		for (int j = 0; j < HEIGHT; ++j) {
+			for (int k = 0; k <WIDTH; ++k) {
 				uchar* p = image.ptr(j, k);
-				p[0] = ::B(res[499 - j][k]);
-				p[1] = ::G(res[499 - j][k]);
-				p[2] = ::R(res[499 - j][k]);
+				p[0] = ::B(res[HEIGHT-1-j][k]);
+				p[1] = ::G(res[HEIGHT-1-j][k]);
+				p[2] = ::R(res[HEIGHT-1-j][k]);
 			}
 		}
 		cv::namedWindow("zero");

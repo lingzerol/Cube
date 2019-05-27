@@ -7,7 +7,8 @@
 typedef int Int;
 typedef double Double;// the type of the element of equation
 
-
+const int WIDTH = 500;
+const int HEIGHT = 667;
 const int time_span = 1;
 
 // Color value and equation
@@ -679,7 +680,7 @@ private:
 class Cube {
 public:
 	friend class Magic_Cube;
-	Cube():image(500, 500, CV_8UC3, CV_RGB(0, 0, 0)),have_message(false),zv(0){
+	Cube():image(HEIGHT, WIDTH, CV_8UC3, CV_RGB(0, 0, 0)),have_message(false),zv(0){
 		//cv::namedWindow("zero");
 		memset(rv, 0, sizeof(rv));
 		memset(tv, 0, sizeof(tv));
@@ -726,5 +727,7 @@ private:// functions
 int GCD(int a, int b);
 int LCM(int a, int b);
 
+
 // control the model direction
 void CV_CDECL on_mouse(int event, int x, int y, int flags, void* userdata);
+

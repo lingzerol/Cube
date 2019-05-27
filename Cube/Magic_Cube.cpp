@@ -5,7 +5,7 @@ Magic_Cube mc;// Magic_Cube include Cube
 
 void Magic_Cube::disorder() {
 	std::unique_lock<std::mutex> lck(cube.finish_mtx);
-	const int times = 1000;
+	const int times = 20;
 	unsigned instruction = 1;
 	srand((unsigned)time(NULL));
 	for (int i = 0; i < times; ++i) {
